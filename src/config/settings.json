@@ -1,25 +1,25 @@
 {
   "sources": {
     "nalog": {
-      "enabled": true,
-      "module": "nalog_parser",
-      "class": "NalogParser",
-      "timeout": 60,
-      "retry_count": 3,
-      "retry_delay": 2,
-      "rate_limit": {
-        "requests_per_minute": 10
+        "enabled": true,
+        "module": "nalog_parser",
+        "class": "NalogParser",
+        "timeout": 60,
+        "retry_count": 3,
+        "retry_delay": 2,
+        "rate_limit": {
+          "requests_per_minute": 10
       }
     },
-    "egrul": {
-      "enabled": false,
-      "module": "egrul_parser",
-      "class": "EgrulParser",
-      "timeout": 20,
-      "retry_count": 2,
-      "retry_delay": 1,
-      "rate_limit": {
-        "requests_per_minute": 60
+  "egrul": {
+        "enabled": true,
+        "module": "egrul_parser",
+        "class": "EgrulParser",
+        "timeout": 90,
+        "retry_count": 2,
+        "retry_delay": 5,
+        "rate_limit": {
+          "requests_per_minute": 5
       }
     }
   },
@@ -44,7 +44,7 @@
     "console_output": true
   },
   "processing": {
-    "parallel_sources": false,
+    "parallel_sources": true,
     "max_workers": 3,
     "timeout_per_source": 60,
     "batch_size": 100

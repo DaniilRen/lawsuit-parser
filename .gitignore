@@ -138,3 +138,13 @@ config/local_settings.json
 *.bak
 dump.rdb
 *.dump
+
+# EGRUL parser working directory
+src/parsers/egrul_working_dir/*.pdf
+src/parsers/egrul_working_dir/*.docx
+src/parsers/egrul_working_dir/*.tmp
+!src/parsers/egrul_working_dir/.gitkeep
+
+# RAS parser working directory
+src/parsers/ras_working_dir/*
+!src/parsers/ras_working_dir/.gitkeep
