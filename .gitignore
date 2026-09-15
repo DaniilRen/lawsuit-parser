@@ -28,10 +28,6 @@ wheels/
 *.manifest
 *.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -139,12 +135,9 @@ config/local_settings.json
 dump.rdb
 *.dump
 
-# EGRUL parser working directory
-src/parsers/egrul_working_dir/*.pdf
-src/parsers/egrul_working_dir/*.docx
-src/parsers/egrul_working_dir/*.tmp
+# Parser working directories
+src/parsers/egrul_working_dir/*
 !src/parsers/egrul_working_dir/.gitkeep
-
-# RAS parser working directory
 src/parsers/ras_working_dir/*
 !src/parsers/ras_working_dir/.gitkeep
+src/parsers/ras_working_dir/browser_profile/

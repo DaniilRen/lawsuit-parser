@@ -1,17 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-Setup script for Company Info Parser
-"""
-
 import os
 import re
 from setuptools import setup, find_packages
 
 
 def get_version():
-    """Get version from main module"""
     with open(os.path.join("src", "__init__.py"), "r") as f:
         content = f.read()
         version_match = re.search(r'__version__\s*=\s*["\']([^"\']+)["\']', content)
@@ -21,7 +16,6 @@ def get_version():
 
 
 def get_long_description():
-    """Get long description from README"""
     with open("README.md", "r", encoding="utf-8") as f:
         return f.read()
 
@@ -48,6 +42,9 @@ setup(
         "beautifulsoup4>=4.12.2",
         "python-dotenv>=1.0.0",
         "pytest>=7.4.3",
+        "fastapi>=0.109.0",
+        "uvicorn[standard]>=0.27.0",
+        "pydantic>=2.5.3",
     ],
     extras_require={
         "dev": [
@@ -59,8 +56,10 @@ setup(
             "pytest-mock>=3.12.0",
         ],
         "scraping": [
-            "selenium>=4.15.0",
-            "aiohttp>=3.9.1",
+            "playwright>=1.40.0",
+            "playwright-stealth>=1.0.6",
+            "curl_cffi>=0.6.2",
+            "pdfplumber>=0.10.3",
             "lxml>=4.9.3",
         ],
         "monitoring": [
@@ -71,7 +70,6 @@ setup(
     entry_points={
         "console_scripts": [
             "company-parser=src.main:main",
-            "parser-cli=src.cli:main",
         ],
     },
     classifiers=[
@@ -91,7 +89,6 @@ setup(
     project_urls={
         "Bug Reports": "https://github.com/yourusername/company-info-parser/issues",
         "Source": "https://github.com/yourusername/company-info-parser",
-        "Documentation": "https://company-info-parser.readthedocs.io/",
     },
     zip_safe=False,
 )

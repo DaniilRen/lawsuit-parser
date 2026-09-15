@@ -24,6 +24,10 @@ def parse_arguments():
     parser.add_argument("--output", "-o", type=str, help="Save output to JSON file (works with --history)")
     parser.add_argument("--compare", nargs=3, metavar=('INN', 'SESSION_1', 'SESSION_2'),
                         help="Compare two parsing sessions")
+    parser.add_argument("--serve", action="store_true", help="Run as HTTP API server")
+    parser.add_argument("--host", type=str, default="127.0.0.1", help="API host (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8000, help="API port (default: 8000)")
+    parser.add_argument("--reload", action="store_true", help="Auto-reload API on code changes (dev only)")
     parser.add_argument("--version", action="version", version="Company Info Parser v0.1.0")
     return parser.parse_args()
 
@@ -246,8 +250,47 @@ async def compare_sessions(inn: str, session_1: str, session_2: str, config_path
         return False
 
 
+async def run_api_server(config_path: str, host: str, port: int, reload: bool):
+    logger = setup_logger()
+
+    try:
+        import uvicorn
+    except ImportError:
+        logger.error("uvicorn is not installed. Run: pip install 'uvicorn[standard]'")
+        return False
+
+    try:
+        from src.api.app import create_app
+        app = create_app(config_path)
+    except Exception as e:
+        logger.error(f"Failed to build API app: {str(e)}")
+        return False
+
+    logger.info(f"Starting API server on http://{host}:{port}")
+    logger.info(f"Docs available at http://{host}:{port}/docs")
+
+    try:
+        config = uvicorn.Config(
+            app=app,
+            host=host,
+            port=port,
+            reload=reload,
+            log_level="info",
+        )
+        server = uvicorn.Server(config)
+        await server.serve()
+        return True
+    except Exception as e:
+        logger.error(f"API server error: {str(e)}")
+        return False
+
+
 async def main():
     args = parse_arguments()
+
+    if args.serve:
+        await run_api_server(args.config, args.host, args.port, args.reload)
+        return
 
     if args.list_sources:
         await list_sources(args.config)

@@ -1,7 +1,4 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: company_parser_db
@@ -12,7 +9,6 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "5432:5432"
     networks:
@@ -24,7 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis for caching (optional)
   redis:
     image: redis:7-alpine
     container_name: company_parser_redis
@@ -37,12 +32,11 @@ services:
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_secure_password}
 
-  # Application
-  app:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: company_parser_app
+    container_name: company_parser_api
     environment:
       - DB_HOST=postgres
       - DB_PORT=5432
@@ -54,11 +48,11 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD:-redis_secure_password}
       - APP_ENV=${APP_ENV:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - API_KEY=${API_KEY:-}
     volumes:
       - ./src:/app/src
       - ./logs:/app/logs
       - ./tests:/app/tests
-      - ./config:/app/config
       - ./data:/app/data
     ports:
       - "8000:8000"
@@ -70,16 +64,40 @@ services:
     networks:
       - parser_network
     restart: unless-stopped
-    command: >
-      sh -c "
-        python -m src.main --init-db &&
-        python -m src.main --run-server
-      "
-    profiles:
-      - full
+    command: python -m src.main --serve --host 0.0.0.0 --port 8000
 
-  # CLI version (for one-off tasks)
-  app-cli:
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: company_parser_api_dev
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=${DB_NAME:-company_parser}
+      - DB_USER=${DB_USER:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres_secure_password}
+      - APP_ENV=development
+      - LOG_LEVEL=DEBUG
+      - API_KEY=${API_KEY:-}
+    volumes:
+      - ./src:/app/src
+      - ./logs:/app/logs
+      - ./tests:/app/tests
+      - ./data:/app/data
+    ports:
+      - "8001:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - parser_network
+    restart: "no"
+    command: python -m src.main --serve --host 0.0.0.0 --port 8000 --reload
+    profiles:
+      - dev
+
+  cli:
     build:
       context: .
       dockerfile: Dockerfile
@@ -96,17 +114,16 @@ services:
       - ./src:/app/src
       - ./logs:/app/logs
       - ./data:/app/data
-      - ./config:/app/config
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - parser_network
     restart: "no"
+    entrypoint: ["python", "-m", "src.main"]
     profiles:
       - cli
 
-  # pgAdmin (optional - for database management)
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: company_parser_pgadmin
@@ -125,7 +142,6 @@ services:
     restart: unless-stopped
     profiles:
       - dev
-      - full
 
 networks:
   parser_network:

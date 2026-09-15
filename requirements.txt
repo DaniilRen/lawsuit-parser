@@ -8,6 +8,14 @@ requests==2.31.0
 beautifulsoup4==4.12.2
 lxml==4.9.3
 playwright==1.40.0
+playwright-stealth==1.0.6
+curl_cffi==0.6.2
+pdfplumber==0.10.3
+
+# API Server
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
 
 # Data Processing
 python-dateutil==2.8.2
@@ -26,7 +34,7 @@ pytest-cov==4.1.0
 pytest-mock==3.12.0
 pytest-asyncio==0.21.1
 
-# Code Quality (optional - development only)
+# Code Quality
 black==23.11.0
 flake8==6.1.0
 mypy==1.7.0
@@ -36,9 +44,3 @@ isort==5.12.0
 tenacity==8.2.3
 cachetools==5.3.1
 python-json-logger==2.0.7
-
-#PDF parsing
-pdfplumber==0.10.3
-
-playwright-stealth==1.0.6
-
