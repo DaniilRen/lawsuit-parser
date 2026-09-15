@@ -1,0 +1,57 @@
+{
+  "sources": {
+    "nalog": {
+      "enabled": true,
+      "module": "nalog_parser",
+      "class": "NalogParser",
+      "timeout": 60,
+      "retry_count": 3,
+      "retry_delay": 2,
+      "rate_limit": {
+        "requests_per_minute": 10
+      }
+    },
+    "egrul": {
+      "enabled": false,
+      "module": "egrul_parser",
+      "class": "EgrulParser",
+      "timeout": 20,
+      "retry_count": 2,
+      "retry_delay": 1,
+      "rate_limit": {
+        "requests_per_minute": 60
+      }
+    }
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "name": "company_parser",
+    "user": "postgres",
+    "password": "postgres",
+    "pool_size": 10,
+    "max_overflow": 20,
+    "pool_timeout": 30,
+    "pool_recycle": 3600,
+    "echo": false
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/app.log",
+    "max_size_mb": 10,
+    "backup_count": 5,
+    "format": "json",
+    "console_output": true
+  },
+  "processing": {
+    "parallel_sources": false,
+    "max_workers": 3,
+    "timeout_per_source": 60,
+    "batch_size": 100
+  },
+  "cache": {
+    "enabled": true,
+    "ttl_seconds": 86400,
+    "max_size": 1000
+  }
+}
