@@ -24,7 +24,8 @@ dev-install:
 	pip install -e .[dev,scraping]
 
 test:
-	pytest tests/ -v --cov=src
+	pytest tests/ -v --tb=short
+	
 
 lint:
 	flake8 src/ tests/

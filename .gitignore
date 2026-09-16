@@ -141,3 +141,5 @@ src/parsers/egrul_working_dir/*
 src/parsers/ras_working_dir/*
 !src/parsers/ras_working_dir/.gitkeep
 src/parsers/ras_working_dir/browser_profile/
+src/parsers/fedresurs_working_dir/*
+!src/parsers/fedresurs_working_dir/.gitkeep

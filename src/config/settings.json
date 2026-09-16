@@ -1,25 +1,36 @@
 {
   "sources": {
     "nalog": {
-        "enabled": true,
-        "module": "nalog_parser",
-        "class": "NalogParser",
-        "timeout": 60,
-        "retry_count": 3,
-        "retry_delay": 2,
-        "rate_limit": {
-          "requests_per_minute": 10
+      "enabled": true,
+      "module": "nalog_parser",
+      "class": "NalogParser",
+      "timeout": 60,
+      "retry_count": 3,
+      "retry_delay": 2,
+      "rate_limit": {
+        "requests_per_minute": 10
+      }
+    },
+    "fedresurs": {
+      "enabled": true,
+      "module": "fedresurs_parser",
+      "class": "FedresursParser",
+      "timeout": 120,
+      "retry_count": 2,
+      "retry_delay": 5,
+      "rate_limit": {
+        "requests_per_minute": 10
       }
     },
   "egrul": {
-        "enabled": true,
-        "module": "egrul_parser",
-        "class": "EgrulParser",
-        "timeout": 90,
-        "retry_count": 2,
-        "retry_delay": 5,
-        "rate_limit": {
-          "requests_per_minute": 5
+      "enabled": true,
+      "module": "egrul_parser",
+      "class": "EgrulParser",
+      "timeout": 90,
+      "retry_count": 2,
+      "retry_delay": 5,
+      "rate_limit": {
+        "requests_per_minute": 5
       }
     }
   },
