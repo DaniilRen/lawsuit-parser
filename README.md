@@ -101,7 +101,7 @@ python -m src.main --serve --reload
 docker-compose up -d postgres redis api
 ```
 
-API on http://localhost:8000. Stop with `docker-compose down`.
+API on http://localhost:5050. Stop with `docker-compose down`.
 
 ---
 

@@ -13,25 +13,16 @@ services:
       - parser-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-
-  redis:
-    image: redis:7-alpine
-    container_name: company_parser_redis
-    volumes:
-      - redis_data:/data
-    networks:
-      - parser-net
-    restart: unless-stopped
-    command: redis-server --appendonly yes
 
   api:
     build:
       context: .
       dockerfile: Dockerfile
+    image: ghcr.io/daniilren/lawsuit-parser-api:latest
     container_name: company_parser_api
     environment:
       - DB_HOST=postgres
@@ -39,23 +30,24 @@ services:
       - DB_NAME=${DB_NAME:-company_parser}
       - DB_USER=${DB_USER:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-postgres_secure_password}
-      - APP_ENV=production
-      - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - API_KEY=${API_KEY:-}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
     volumes:
-      - ./logs:/app/logs
-      - ./src/parsers/egrul_working_dir:/app/src/parsers/egrul_working_dir
-      - ./src/parsers/ras_working_dir:/app/src/parsers/ras_working_dir
-      - ./src/parsers/fedresurs_working_dir:/app/src/parsers/fedresurs_working_dir
-    ports:
-      - "127.0.0.1:5050:5050"
+      - egrul_workdir:/app/src/parsers/egrul_working_dir
+      - ras_workdir:/app/src/parsers/ras_working_dir
+      - fedresurs_workdir:/app/src/parsers/fedresurs_working_dir
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - parser-net
     restart: unless-stopped
-    command: python -m src.main --serve --host 0.0.0.0 --port 5050
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5050/api/v1/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
 
 networks:
   parser-net:
@@ -63,4 +55,6 @@ networks:
 
 volumes:
   postgres_data:
-  redis_data:
+  egrul_workdir:
+  ras_workdir:
+  fedresurs_workdir:

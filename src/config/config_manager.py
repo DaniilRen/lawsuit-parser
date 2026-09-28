@@ -48,7 +48,20 @@ class ConfigManager:
         return list(self.get_enabled_sources().keys())
     
     def get_db_config(self) -> Dict[str, Any]:
-        return self.config.get('database', {})
+        db = self.config.get('database', {})
+        return {
+            'host': os.getenv('DB_HOST', db.get('host', 'localhost')),
+            'port': int(os.getenv('DB_PORT', db.get('port', 5432))),
+            'name': os.getenv('DB_NAME', db.get('name', 'company_parser')),
+            'user': os.getenv('DB_USER', db.get('user', 'postgres')),
+            'password': os.getenv('DB_PASSWORD', db.get('password', 'postgres')),
+            'pool_size': db.get('pool_size', 10),
+            'max_overflow': db.get('max_overflow', 20),
+            'pool_timeout': db.get('pool_timeout', 30),
+            'pool_recycle': db.get('pool_recycle', 3600),
+            'echo': db.get('echo', False),
+            'connect_args': db.get('connect_args', {}),
+        }
     
     def get_logging_config(self) -> Dict[str, Any]:
         return self.config.get('logging', {})

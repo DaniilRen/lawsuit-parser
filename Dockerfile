@@ -14,7 +14,10 @@ COPY requirements.txt .
 
 RUN python -m venv /opt/venv \
     && /opt/venv/bin/pip install --no-cache-dir --upgrade pip \
-    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+    && /opt/venv/bin/pip install --no-cache-dir \
+        -i https://pypi.tuna.tsinghua.edu.cn/simple \
+        --trusted-host pypi.tuna.tsinghua.edu.cn \
+        -r requirements.txt
 
 RUN /opt/venv/bin/playwright install chromium \
     && /opt/venv/bin/playwright install-deps || true
@@ -39,9 +42,9 @@ RUN groupadd -r parseruser && useradd -r -g parseruser parseruser \
 
 USER parseruser
 
-EXPOSE 8000
+EXPOSE 5050
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-    CMD curl -f http://localhost:8000/api/v1/health || exit 1
+    CMD curl -f http://localhost:5050/api/v1/health || exit 1
 
-CMD ["python", "-m", "src.main", "--serve", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "src.main", "--serve", "--host", "0.0.0.0", "--port", "5050"]
