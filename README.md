@@ -81,7 +81,7 @@ python -m src.main --init-db
 python -m src.main --serve
 ```
 
-Served at http://127.0.0.1:8000. Interactive docs at http://127.0.0.1:8000/docs.
+Served at http://127.0.0.1:5050. Interactive docs at http://127.0.0.1:5050/docs.
 
 Custom host/port:
 

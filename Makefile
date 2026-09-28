@@ -67,7 +67,7 @@ serve-dev:
 	python -m src.main --serve --reload
 
 run:
-	python -m src.main --serve --host 0.0.0.0 --port 8000
+	python -m src.main --serve --host 0.0.0.0 --port 5050
 
 parse:
 	python -m src.main --parse-inn $(INN)

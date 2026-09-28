@@ -26,7 +26,7 @@ def parse_arguments():
                         help="Compare two parsing sessions")
     parser.add_argument("--serve", action="store_true", help="Run as HTTP API server")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="API host (default: 127.0.0.1)")
-    parser.add_argument("--port", type=int, default=8000, help="API port (default: 8000)")
+    parser.add_argument("--port", type=int, default=5050, help="API port (default: 5050)")
     parser.add_argument("--reload", action="store_true", help="Auto-reload API on code changes (dev only)")
     parser.add_argument("--version", action="version", version="Company Info Parser v0.1.0")
     return parser.parse_args()
