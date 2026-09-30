@@ -169,84 +169,77 @@ class ParserService:
             'comparison': comparison,
         }
 
-    def diff_sessions(
-        self,
-        inn: str,
-        from_session_id: int,
-        to_session_id: int,
-        sources: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
-        from src.utils.diff import compute_diff
+def diff_sessions(
+    self,
+    inn: str,
+    from_session_id: int,
+    to_session_id: int,
+    sources: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    from src.utils.diff import compute_diff
+    from src.utils.simulator import apply_simulation
 
-        from_data = self.db.get_parser_data(inn, session_id=from_session_id)
-        to_data = self.db.get_parser_data(inn, session_id=to_session_id)
+    from_data = self.db.get_parser_data(inn, session_id=from_session_id)
+    to_data = self.db.get_parser_data(inn, session_id=to_session_id)
 
-        from_map = {row.source_name: row.data for row in from_data}
-        to_map = {row.source_name: row.data for row in to_data}
+    from_map = {row.source_name: row.data for row in from_data}
+    to_map = {row.source_name: row.data for row in to_data}
 
-        if sources:
-            all_sources = set(sources)
-        else:
-            all_sources = set(from_map.keys()) | set(to_map.keys())
+    if sources:
+        all_sources = set(sources)
+    else:
+        all_sources = set(from_map.keys()) | set(to_map.keys())
 
-        per_source: Dict[str, Any] = {}
-        any_changed = False
+    per_source: Dict[str, Any] = {}
+    any_changed = False
 
-        for source in sorted(all_sources):
-            old = from_map.get(source)
-            new = to_map.get(source)
+    for source in sorted(all_sources):
+        old = from_map.get(source)
+        new = to_map.get(source)
 
-            if old is None and new is None:
-                per_source[source] = {
-                    'changed': False,
-                    'fields': [],
-                    'changed_count': 0,
-                    'note': 'no data in either session',
-                }
-                continue
+        old, new = apply_simulation(source, old, new, self.config_manager)
 
-            if old is None:
-                per_source[source] = {
-                    'changed': True,
-                    'fields': [
-                        {
-                            'field': '*',
-                            'type': 'added',
-                            'to': 'new source appeared in this session',
-                        }
-                    ],
-                    'changed_count': 1,
-                }
-                any_changed = True
-                continue
+        if old is None and new is None:
+            per_source[source] = {
+                'changed': False,
+                'fields': [],
+                'changed_count': 0,
+                'note': 'no data in either session',
+            }
+            continue
 
-            if new is None:
-                per_source[source] = {
-                    'changed': True,
-                    'fields': [
-                        {
-                            'field': '*',
-                            'type': 'removed',
-                            'from': 'source was not parsed in this session',
-                        }
-                    ],
-                    'changed_count': 1,
-                }
-                any_changed = True
-                continue
+        if old is None:
+            per_source[source] = {
+                'changed': True,
+                'fields': [{'field': '*', 'type': 'added',
+                            'to': 'new source appeared in this session'}],
+                'changed_count': 1,
+            }
+            any_changed = True
+            continue
 
-            diff = compute_diff(old, new)
-            per_source[source] = diff
-            if diff['changed']:
-                any_changed = True
+        if new is None:
+            per_source[source] = {
+                'changed': True,
+                'fields': [{'field': '*', 'type': 'removed',
+                            'from': 'source was not parsed in this session'}],
+                'changed_count': 1,
+            }
+            any_changed = True
+            continue
 
-        return {
-            'inn': inn,
-            'from_session_id': from_session_id,
-            'to_session_id': to_session_id,
-            'changed': any_changed,
-            'sources': per_source,
-        }
+        diff = compute_diff(old, new)
+        per_source[source] = diff
+        if diff['changed']:
+            any_changed = True
+
+    return {
+        'inn': inn,
+        'from_session_id': from_session_id,
+        'to_session_id': to_session_id,
+        'changed': any_changed,
+        'sources': per_source,
+    }
 
     def get_previous_session_id(
         self,

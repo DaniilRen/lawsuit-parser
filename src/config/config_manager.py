@@ -18,6 +18,9 @@ class ConfigManager:
         
         self._resolve_env_variables(config)
         return config
+
+    def get_config(self) -> Dict[str, Any]:
+        return self.config
     
     def _resolve_env_variables(self, config: Dict[str, Any]) -> None:
         for key, value in config.items():

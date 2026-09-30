@@ -64,5 +64,15 @@
     "enabled": true,
     "ttl_seconds": 86400,
     "max_size": 1000
+  },
+  "testing": {
+    "simulate_changes": {
+      "enabled": true,
+      "probability": 1.0,
+      "sources": {
+        "nalog": { "fields": ["status"] },
+        "egrul": { "fields": ["director_name"] }
+      }
+    }
   }
 }
